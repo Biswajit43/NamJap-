@@ -20,7 +20,7 @@ app.use(express.json())
 
 app.use(express.urlencoded({ extended: true }));
 
-const allowcorsorigin = ['http://localhost:5173']
+const allowcorsorigin = ['http://localhost:5173' , 'https://namjap.onrender.com']
 
 app.use(cookieparser())
 

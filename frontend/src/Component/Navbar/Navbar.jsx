@@ -90,37 +90,37 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu, show/hide based on menu state. */}
+            {/* Mobile Menu */}
             {isOpen && (
                 <div className="md:hidden" id="mobile-menu">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        <Link to="/" className='text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300'>Home</Link>
-                        <Link to="/about" className='text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300'>About</Link>
-                        <Link to="/contactus" className='text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300'>Contact us</Link>
+                        <Link to="/" className="text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300">Home</Link>
+                        <Link to="/about" className="text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300">About</Link>
+                        <Link to="/contactus" className="text-slate-300 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300">Contact us</Link>
                     </div>
-                    <div className="pt-4 pb-3 border-t border-slate-700">
-                        <div className='hidden md:flex items-center gap-4'>
-                            {(isloggedin && userdata?.isVerified) ? (
-                                <>
-                                    <h1>Welcome, {userdata?.name}</h1>
-                                    <button onClick={handlelogout} className='bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-slate-900 font-bold py-2 px-4 rounded-lg text-sm shadow-lg shadow-amber-500/20 transition-all duration-200'>
-                                        Logout
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <Link to="/login" className='text-slate-300 hover:text-amber-300 font-medium text-sm transition-colors duration-300'>
-                                        Log in
-                                    </Link>
-                                    <Link to="/login" className='bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-slate-900 font-bold py-2 px-4 rounded-lg text-sm shadow-lg shadow-amber-500/20 transition-all duration-200'>
-                                        Sign up
-                                    </Link>
-                                </>
-                            )}
-                        </div>
+
+                    <div className="pt-4 pb-3 border-t border-slate-700 flex flex-col gap-2 px-3">
+                        {(isloggedin && userdata?.isVerified) ? (
+                            <>
+                                <h1 className="text-slate-300 font-medium">Welcome, {userdata?.name}</h1>
+                                <button onClick={handlelogout} className="bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-slate-900 font-bold py-2 px-4 rounded-lg text-sm shadow-lg shadow-amber-500/20 transition-all duration-200">
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="text-slate-300 hover:text-amber-300 font-medium text-sm transition-colors duration-300">
+                                    Log in
+                                </Link>
+                                <Link to="/login" className="bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 active:scale-95 text-slate-900 font-bold py-2 px-4 rounded-lg text-sm shadow-lg shadow-amber-500/20 transition-all duration-200">
+                                    Sign up
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
-            )
-            }
+            )}
+
         </nav >
     );
 };

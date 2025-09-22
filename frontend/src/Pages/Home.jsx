@@ -198,29 +198,38 @@ const Home = () => {
     };
 
     const handleCountClick = (event) => {
-        // Ripple effect
         const button = event.currentTarget;
         const ripple = document.createElement("span");
         const rect = button.getBoundingClientRect();
         const size = Math.max(rect.width, rect.height);
         const x = event.clientX - rect.left - size / 2;
         const y = event.clientY - rect.top - size / 2;
-        addtocount()
+
+        // Ripple effect
         ripple.style.width = ripple.style.height = `${size}px`;
         ripple.style.left = `${x}px`;
         ripple.style.top = `${y}px`;
         ripple.className = "absolute bg-white/20 rounded-full animate-ping pointer-events-none";
         button.appendChild(ripple);
         setTimeout(() => ripple.remove(), 600);
-        // Update count
-        const newCount = count + 1;
-        setCount(newCount);
-        // Check for mala completion
-        if (newCount % 108 === 0) {
-            setShowCelebration(true);
-            setTimeout(() => setShowCelebration(false), 3000);
-        }
+
+        // Optimistically update local count
+        setCount(prev => {
+            const newCount = prev + 1;
+
+            // Celebration check
+            if (newCount % 108 === 0) {
+                setShowCelebration(true);
+                setTimeout(() => setShowCelebration(false), 3000);
+            }
+
+            return newCount;
+        });
+
+        // Call backend asynchronously
+        addtocount(); // This will update userdata in background
     };
+
 
 
     const handleEdit = () => {
@@ -334,7 +343,6 @@ const Home = () => {
                                     <div>
                                         <div className="text-amber-400 font-bold text-lg">{userdata?.totalMalas}</div>
                                         <div className="text-xs text-slate-400">Total Malas</div>
-
                                     </div>
 
                                 </div>

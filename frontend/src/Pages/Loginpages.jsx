@@ -7,11 +7,12 @@ import { AppContext } from '../Context/Context';
 import { toast } from 'react-toastify';
 
 const SignupPage = () => {
+  const [loading, setloading] = useState(false);
   const [login, setlogin] = useState(false);
   const [name, setname] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const { backendurl, getuserdata, setisloggedin } = useContext(AppContext);
 
@@ -19,16 +20,45 @@ const SignupPage = () => {
     setlogin(!login);
   };
 
+  const handlepassword = (pass) => {
+    const minLength = 6;
+    const errors = [];
+
+    if (pass.length < minLength) {
+      errors.push(`Password must be at least ${minLength} characters long.`);
+    }
+    if (!/\d/.test(pass)) {
+      errors.push("Password must contain at least one number.");
+    }
+    if (!/[a-zA-Z]/.test(pass)) {
+      errors.push("Password must contain at least one letter.");
+    }
+    if (!/[^a-zA-Z0-9]/.test(pass)) {
+      errors.push("Password must contain at least one special character.");
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error));
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     axios.defaults.withCredentials = true;
+    setloading(true); // Set loading true at the start for both cases
 
     try {
       if (!login) {
         // --- Signup ---
+        if (!handlepassword(password)) {
+          setloading(false);
+          return;
+        }
         const res = await axios.post(backendurl + '/create', { name, email, password });
         if (res.data.success) {
-          alert("Account created successfully");
+          toast.success("Account created successfully");
           setisloggedin(true);
           getuserdata();
           navigate('/verifymail');
@@ -39,9 +69,9 @@ const SignupPage = () => {
         // --- Login ---
         const res = await axios.post(backendurl + '/login', { email, password });
         if (res.data.success) {
-          alert("Login successfully");
+          toast.success("Login successful");
           setisloggedin(true);
-          getuserdata()
+          getuserdata();
           navigate('/');
         } else {
           toast.error(res.data.message);
@@ -50,14 +80,17 @@ const SignupPage = () => {
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Try again!");
+    } finally {
+      // This will run whether the try block succeeded or failed
+      setloading(false);
     }
   };
 
   // Common style for input fields
   const inputStyles = "w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-300";
 
-  // Common style for the main submit button
-  const buttonStyles = "w-full bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold rounded-xl px-8 py-3 shadow-lg shadow-amber-500/20 transition-all duration-300 active:scale-95";
+  // Common style for the main submit button with disabled states
+  const buttonStyles = "w-full bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold rounded-xl px-8 py-3 shadow-lg shadow-amber-500/20 transition-all duration-300 active:scale-95 disabled:from-amber-600 disabled:to-amber-700 disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-70";
 
   return (
     <>
@@ -71,7 +104,6 @@ const SignupPage = () => {
               </h1>
               <p className="text-slate-400">Log in to continue your journey.</p>
             </div>
-
             <div className="flex flex-col gap-5">
               <div>
                 <label className="block text-left mb-2 text-sm font-medium text-slate-400">Email</label>
@@ -84,7 +116,6 @@ const SignupPage = () => {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-left mb-2 text-sm font-medium text-slate-400">Password</label>
                 <input
@@ -96,21 +127,22 @@ const SignupPage = () => {
                   required
                 />
               </div>
-
-              <button type="submit" className={buttonStyles}>
-                Log In
+              <button type="submit" className={buttonStyles} disabled={loading}>
+                {loading ? "Please wait..." : "Log In"}
               </button>
             </div>
           </form>
-          <p className="mb-2">
-            Already have an account?{' '}
-            <button onClick={handlelogin} className="font-semibold text-amber-400 hover:text-amber-300 transition">
-              Sign Up
-            </button>
-          </p>
-          <Link to={"/resetpassword"} className="font-semibold text-amber-400 hover:text-amber-300 transition">
-            Forgot Password?
-          </Link>
+          <div className="mt-8 text-center text-sm text-slate-400">
+            <p className="mb-2">
+              Don't have an account?{' '}
+              <button onClick={handlelogin} className="font-semibold text-amber-400 hover:text-amber-300 transition">
+                Sign Up
+              </button>
+            </p>
+            <Link to={"/resetpassword"} className="font-semibold text-amber-400 hover:text-amber-300 transition">
+              Forgot Password?
+            </Link>
+          </div>
         </div>
       ) : (
         // --- SIGNUP FORM ---
@@ -122,7 +154,6 @@ const SignupPage = () => {
               </h1>
               <p className="text-slate-400">Begin your devotional practice today.</p>
             </div>
-
             <div className="flex flex-col gap-5">
               <div>
                 <label className="block text-left mb-2 text-sm font-medium text-slate-400">Your Name</label>
@@ -135,7 +166,6 @@ const SignupPage = () => {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-left mb-2 text-sm font-medium text-slate-400">Email</label>
                 <input
@@ -147,7 +177,6 @@ const SignupPage = () => {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-left mb-2 text-sm font-medium text-slate-400">Password</label>
                 <input
@@ -159,13 +188,11 @@ const SignupPage = () => {
                   required
                 />
               </div>
-
-              <button type="submit" className={buttonStyles}>
-                Register with Devotion
+              <button type="submit" className={buttonStyles} disabled={loading}>
+                {loading ? "Creating Account..." : "Register with Devotion"}
               </button>
             </div>
           </form>
-
           <div className="mt-8 text-center text-sm text-slate-400">
             <p className="mb-2">
               Already have an account?{' '}
